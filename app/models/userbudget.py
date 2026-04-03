@@ -23,7 +23,7 @@ class Expense(SQLModel, table=True):
     user_account_id: int = Field(foreign_key='UserBudget.id')
     category_id: int = Field(foreign_key='Category.id')
     cost: float = Field(index=True, default=0.0)
-    start_date: Optional[datetime] = Field(default=datetime.now(datetime.timezone.utc))
+    start_date: Optional[datetime] = Field(default=datetime.now(timezone.utc))
     end_date: Optional[datetime] = Field(default=None)
     is_recurring: bool = Field(default=False)
     is_paid: bool = Field(default=False)
