@@ -1,11 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Register{% endblock %}
-
-{% block external_js %}
-
-{% endblock %}
-
-{% block internal_css %}
+{% extends "base.html" %} {% block title %}Register{% endblock %} {% block
+external_js %} {% endblock %} {% block internal_css %}
 <style>
     body {
         background-color: #f8f9fa;
@@ -42,12 +36,11 @@
         border-radius: 0.5rem;
     }
 </style>
-{% endblock %}
+{% endblock %} {% block content %}
 
-
-{% block content %}
-
-<div class="container login-container d-flex align-items-center justify-content-center">
+<div
+    class="container login-container d-flex align-items-center justify-content-center"
+>
     <div class="card shadow-lg login-card col-lg-10">
         <div class="row g-0">
             <div class="col-lg-6 d-none d-lg-flex login-image">
@@ -62,41 +55,60 @@
 
                     <form id="signUpForm" method="POST">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control form-control-md" id="username" name="username"
-                                required="required">
-                        </div>
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Email</label>
-                            <input type="email" class="form-control form-control-md" id="email" name="email"
-                                required="required">
+                            <label for="username" class="form-label"
+                                >Username</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control form-control-md"
+                                id="username"
+                                name="username"
+                                required="required"
+                            />
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control form-control-md" id="password" name="password"
-                                required>
+                            <label for="password" class="form-label"
+                                >Password</label
+                            >
+                            <input
+                                type="password"
+                                class="form-control form-control-md"
+                                id="password"
+                                name="password"
+                                required
+                            />
                         </div>
 
                         <div class="d-grid mb-3">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-lg"
+                            >
                                 Register
                             </button>
                         </div>
 
                         <div class="d-grid mb-3">
-                            <a class="btn btn-secondary btn-lg" href="{{url_for('login_view')}}" role="button">
+                            <a
+                                class="btn btn-secondary btn-lg"
+                                href="{{url_for('login_view')}}"
+                                role="button"
+                            >
                                 Back to Login
                             </a>
                         </div>
                         {% for message in get_flashed_messages(request) %}
-                        <div class="alert alert-{{ message.type }}" role="alert">{{ message.message }}</div>
+                        <div
+                            class="alert alert-{{ message.type }}"
+                            role="alert"
+                        >
+                            {{ message.message }}
+                        </div>
                         {% endfor %}
                     </form>
-
                 </div>
             </div>
-
         </div>
     </div>
 </div>

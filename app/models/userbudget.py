@@ -1,5 +1,7 @@
-from user import *
-from sqlmodel import Enum, Relationship
+from datetime import datetime, timezone
+from sqlmodel import Relationship, Field, SQLModel
+from typing import Optional
+from enum import Enum
 
 class CategoryName(str, Enum):
     TECHNOLOGY = "Technology"
@@ -14,24 +16,24 @@ class CategoryName(str, Enum):
 
 class UserBudget(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key='User.id')
+    user_id: int = Field(foreign_key='user.id')
     name: str = Field(index=True, unique=True)
     budget: Optional[float] = Field(index=True, default=0.0)
     
-    incomeList: list['Income'] = Relationship(back_populates='userbudget')
-    expenseList: list['Expense'] = Relationship(back_populates='userbudget')
+    income_list: list['Income'] = Relationship(back_populates='user_budget')
+    expense_list: list['Expense'] = Relationship(back_populates='user_budget')
 
 class Income(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_budget_id: int = Field(foreign_key='UserBudget.id')
+    user_budget_id: int = Field(foreign_key='userbudget.id')
     name: str = Field(index=True)
     earnings: float = Field(index=True, default=0.0)
     
-    userBudget: UserBudget = Relationship(back_populates='income')
+    user_budget: UserBudget = Relationship(back_populates='income_list')
 
 class Expense(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_budget_id: int = Field(foreign_key='UserBudget.id')
+    user_budget_id: int = Field(foreign_key='userbudget.id')
     category: CategoryName = Field(default=CategoryName.OTHER, nullable=False)
     name: str = Field(index=True)
     cost: float = Field(index=True, default=0.0)
@@ -40,4 +42,4 @@ class Expense(SQLModel, table=True):
     is_recurring: bool = Field(default=False)
     is_paid: bool = Field(default=False)
     
-    userBudget: UserBudget = Relationship(back_populates='expense')
+    user_budget: UserBudget = Relationship(back_populates='expense_list')
