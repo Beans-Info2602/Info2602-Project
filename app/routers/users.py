@@ -3,6 +3,7 @@ from fastapi import Request, status, Form
 from app.dependencies import SessionDep
 from . import api_router
 from app.services.auth_service import AuthService
+from app.services.user_service import UserService
 from app.repositories.user import UserRepository
 from app.utilities.flash import flash
 from app.schemas import UserResponse

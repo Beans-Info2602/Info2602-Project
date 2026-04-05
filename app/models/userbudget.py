@@ -18,8 +18,8 @@ class UserBudget(SQLModel, table=True):
     name: str = Field(index=True, unique=True)
     budget: float = Field(index=True, default=0.0)
     
-    incomeList: list['Income'] = Relationship(back_populates='budget')
-    expenseList: list['Expense'] = Relationship(back_populates='budget')
+    incomeList: list['Income'] = Relationship(back_populates='userbudget')
+    expenseList: list['Expense'] = Relationship(back_populates='userbudget')
 
 class Income(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

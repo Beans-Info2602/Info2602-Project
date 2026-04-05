@@ -46,6 +46,9 @@ class UserRepository:
 
     def get_all_users(self) -> list[User]:
         return self.db.exec(select(User)).all()
+    
+    def get_all_regular_users(self) -> list[User]:
+        return self.db.exec(select(User).where(User.role == "Regular User")).all()
 
     def update_user(self, user_id:int, user_data: UserUpdate)->User:
         user = self.db.get(User, user_id)
@@ -70,6 +73,8 @@ class UserRepository:
         user = self.db.get(User, user_id)
         if not user:
             raise Exception("User doesn't exist")
+        if user.role == "Administrator":
+            raise Exception("Admin users cannot be deleted")
         try:
             self.db.delete(user)
             self.db.commit()

@@ -8,8 +8,11 @@ class UserService:
         self.user_repo = user_repo
 
     def get_all_users(self):
-        return self.user_repo.get_all()
+        return self.user_repo.get_all_users()
     
+    def get_all_regular_users(self):
+        return self.user_repo.get_all_regular_users()
+
     def get_user_by_id(self, user_id: int):
         return self.user_repo.get_by_id(user_id)
     
