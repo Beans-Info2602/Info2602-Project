@@ -16,7 +16,7 @@ class UserBudget(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key='User.id')
     name: str = Field(index=True, unique=True)
-    budget: float = Field(index=True, default=0.0)
+    budget: Optional[float] = Field(index=True, default=0.0)
     
     incomeList: list['Income'] = Relationship(back_populates='userbudget')
     expenseList: list['Expense'] = Relationship(back_populates='userbudget')

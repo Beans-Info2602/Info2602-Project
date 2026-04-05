@@ -42,6 +42,16 @@ class UserBudgetRepository:
     
     def get_all_categories(self) -> list[CategoryName]:
         return list(CategoryName)
+    
+    def get_total_budget_for_user(self, user_id:int) -> float:
+        user_budgets = self.db.exec(select(UserBudget).where(UserBudget.user_id == user_id)).all()
+        return sum(budget.budget for budget in user_budgets)
+    
+    def get_budget_amount_for_user(self, budget_id:int, user_id:int) -> float:
+        budget = self.db.exec(select(UserBudget).where(UserBudget.user_id == user_id, UserBudget.id == budget_id)).one_or_none()
+        if not budget:
+            raise Exception("Invalid user budget id given")
+        return budget.budget
 
     def update_user_budget(self, budget_id:int, user_budget_data: UserBudgetUpdate)->UserBudget:
         user_budget = self.db.get(UserBudget, budget_id)
@@ -60,7 +70,6 @@ class UserBudgetRepository:
             self.db.rollback()
             raise
         
-        
     def add_income(self, budget_id:int, income: Income) -> Income:
         user_budget = self.db.get(UserBudget, budget_id)
         if not user_budget:
@@ -68,6 +77,8 @@ class UserBudgetRepository:
         income_db = Income.model_validate(income)
         income_db.user_budget_id = budget_id
         try:
+            new_budget = user_budget.budget + income.earnings
+            user_budget.budget = new_budget
             self.db.add(income_db)
             self.db.commit()
             self.db.refresh(income_db)
@@ -85,7 +96,10 @@ class UserBudgetRepository:
             income.name = income_data.name
         if income_data.earnings:
             income.earnings = income_data.earnings
-        
+            budget = self.db.get(UserBudget, income.user_budget_id)
+            new_budget = budget.budget - income.earnings + income_data.earnings
+            budget.budget = new_budget
+
         try:
             self.db.add(income)
             self.db.commit()
@@ -98,9 +112,12 @@ class UserBudgetRepository:
     
     def delete_income(self, income_id:int):
         income = self.db.get(Income, income_id)
+        budget = self.db.get(UserBudget, income.user_budget_id)
         if not income:
             raise Exception("Invalid income id given")
         try:
+            new_budget = budget.budget - income.earnings
+            budget.budget = new_budget
             self.db.delete(income)
             self.db.commit()
         except Exception as e:
@@ -118,6 +135,8 @@ class UserBudgetRepository:
         expense_db = Expense.model_validate(expense)
         expense_db.user_budget_id = budget_id
         try:
+            new_budget = user_budget.budget - expense.cost
+            user_budget.budget = new_budget
             self.db.add(expense_db)
             self.db.commit()
             self.db.refresh(expense_db)
@@ -135,6 +154,9 @@ class UserBudgetRepository:
             expense.name = expense_data.name
         if expense_data.cost:
             expense.cost = expense_data.cost
+            budget = self.db.get(UserBudget, expense.user_budget_id)
+            new_budget = budget.budget + expense.cost - expense_data.cost
+            budget.budget = new_budget
         if expense_data.category:
             expense.category = expense_data.category
         if expense_data.start_date:
@@ -159,6 +181,9 @@ class UserBudgetRepository:
     def get_all_expenses_for_budget(self, budget_id:int) -> list[Expense]:
         return self.db.exec(select(Expense).where(Expense.user_budget_id == budget_id)).all()
     
+    def get_all_expenses_by_category_for_budget(self, budget_id:int, category: CategoryName) -> list[Expense]:
+        return self.db.exec(select(Expense).where(Expense.user_budget_id == budget_id, Expense.category == category)).all()
+    
     def get_all_recurring_expenses_for_budget(self, budget_id:int) -> list[Expense]:
         return self.db.exec(select(Expense).where(Expense.user_budget_id == budget_id, Expense.is_recurring == True)).all()
     
@@ -170,9 +195,12 @@ class UserBudgetRepository:
     
     def delete_expense(self, expense_id:int):
         expense = self.db.get(Expense, expense_id)
+        budget = self.db.get(UserBudget, expense.user_budget_id)
         if not expense:
             raise Exception("Invalid expense id given")
         try:
+            new_budget = budget.budget + expense.cost
+            budget.budget = new_budget
             self.db.delete(expense)
             self.db.commit()
         except Exception as e:
