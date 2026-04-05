@@ -23,7 +23,7 @@ class UserBudget(SQLModel, table=True):
 
 class Income(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_account_id: int = Field(foreign_key='UserBudget.id')
+    user_budget_id: int = Field(foreign_key='UserBudget.id')
     name: str = Field(index=True)
     earnings: float = Field(index=True, default=0.0)
     
@@ -31,7 +31,7 @@ class Income(SQLModel, table=True):
 
 class Expense(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_account_id: int = Field(foreign_key='UserBudget.id')
+    user_budget_id: int = Field(foreign_key='UserBudget.id')
     category: CategoryName = Field(default=CategoryName.OTHER, nullable=False)
     name: str = Field(index=True)
     cost: float = Field(index=True, default=0.0)

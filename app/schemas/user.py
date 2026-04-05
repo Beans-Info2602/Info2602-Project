@@ -9,10 +9,10 @@ class UserUpdate(SQLModel):
     email: Optional[EmailStr]
  
 class AdminCreate(UserBase):
-    role:str = "admin"
+    role:str = "Administrator"
 
 class RegularUserCreate(UserBase):
-    role:str = "regular_user"
+    role:str = "Regular User"
 
 class UserResponse(SQLModel):
     id: int
