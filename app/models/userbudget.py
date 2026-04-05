@@ -14,6 +14,7 @@ class UserBudget(SQLModel, table=True):
 class Income(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_account_id: int = Field(foreign_key='UserBudget.id')
+    name: str = Field(index=True)
     earnings: float = Field(index=True, default=0.0)
     
     userBudget: UserBudget = Relationship(back_populates='income')
@@ -22,6 +23,7 @@ class Expense(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_account_id: int = Field(foreign_key='UserBudget.id')
     category_id: int = Field(foreign_key='Category.id')
+    name: str = Field(index=True)
     cost: float = Field(index=True, default=0.0)
     start_date: Optional[datetime] = Field(default=datetime.now(timezone.utc))
     end_date: Optional[datetime] = Field(default=None)
