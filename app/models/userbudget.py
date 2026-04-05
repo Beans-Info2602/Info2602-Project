@@ -1,6 +1,16 @@
-from category import *
 from user import *
-from sqlmodel import Relationship
+from sqlmodel import Enum, Relationship
+
+class CategoryName(str, Enum):
+    TECHNOLOGY = "Technology"
+    HEALTH = "Health"
+    SPORTS = "Sports"
+    ENTERTAINMENT = "Entertainment"
+    BUSINESS = "Business"
+    RENT = "Rent"
+    FOOD = "Food"
+    UTILITIES = "Utilities"
+    OTHER = "Other"
 
 class UserBudget(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -22,7 +32,7 @@ class Income(SQLModel, table=True):
 class Expense(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_account_id: int = Field(foreign_key='UserBudget.id')
-    category_id: int = Field(foreign_key='Category.id')
+    category: CategoryName = Field(default=CategoryName.OTHER, nullable=False)
     name: str = Field(index=True)
     cost: float = Field(index=True, default=0.0)
     start_date: Optional[datetime] = Field(default=datetime.now(timezone.utc))
@@ -30,5 +40,4 @@ class Expense(SQLModel, table=True):
     is_recurring: bool = Field(default=False)
     is_paid: bool = Field(default=False)
     
-    category: Category = Relationship(back_populates='expenseList')
     userBudget: UserBudget = Relationship(back_populates='expense')
