@@ -1,5 +1,5 @@
 from sqlmodel import Session, select, func
-from app.models.user import UserBase, User
+from app.models.user import Admin, UserBase, User
 from typing import Optional, Tuple
 from app.utilities.pagination import Pagination
 from app.schemas.user import UserUpdate
@@ -28,7 +28,7 @@ class UserRepository:
         db_qry = select(User)
         if query:
             db_qry = db_qry.where(
-                User.username.ilike(f"%{query}%") | User.email.ilike(f"%{query}%")
+                User.username.ilike(f"%{query}%")
             )
         count_qry = select(func.count()).select_from(db_qry.subquery())
         count_todos = self.db.exec(count_qry).one()
@@ -41,11 +41,25 @@ class UserRepository:
     def get_by_username(self, username: str) -> Optional[User]:
         return self.db.exec(select(User).where(User.username == username)).one_or_none()
 
+    def get_by_username_any(self, username: str) -> Optional[User | Admin]:
+        user = self.get_by_username(username)
+        if user:
+            return user
+        return self.db.exec(select(Admin).where(Admin.username == username)).one_or_none()
+
     def get_by_id(self, user_id: int) -> Optional[User]:
+        return self.db.get(User, user_id)
+
+    def get_by_id_and_role(self, user_id: int, role: str) -> Optional[User | Admin]:
+        if role == "Administrator":
+            return self.db.get(Admin, user_id)
         return self.db.get(User, user_id)
 
     def get_all_users(self) -> list[User]:
         return self.db.exec(select(User)).all()
+    
+    def get_all_regular_users(self) -> list[User]:
+        return self.db.exec(select(User).where(User.role == "Regular User")).all()
 
     def update_user(self, user_id:int, user_data: UserUpdate)->User:
         user = self.db.get(User, user_id)
@@ -53,8 +67,6 @@ class UserRepository:
             raise Exception("Invalid user id given")
         if user_data.username:
             user.username = user_data.username
-        if user_data.email:
-            user.email = user_data.email
         
         try:
             self.db.add(user)
@@ -70,6 +82,8 @@ class UserRepository:
         user = self.db.get(User, user_id)
         if not user:
             raise Exception("User doesn't exist")
+        if user.role == "Administrator":
+            raise Exception("Admin users cannot be deleted")
         try:
             self.db.delete(user)
             self.db.commit()

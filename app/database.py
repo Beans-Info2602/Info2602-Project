@@ -3,6 +3,8 @@ from sqlmodel import SQLModel, Session, create_engine
 from app.config import get_settings
 from contextlib import contextmanager
 
+from app.utilities.security import encrypt_password
+
 logger = logging.getLogger(__name__)
 
 engine = create_engine(
@@ -32,6 +34,23 @@ def _session_generator():
 
 def get_session():
     yield from _session_generator()
+    
+def create_default_users():
+    from app.models.user import Admin, User
+    from sqlmodel import select
+    with Session(engine) as session:
+        if not session.exec(select(Admin)).first():
+            password = encrypt_password("bobpass")
+            admin_user = Admin(username="bob", password=password)
+            session.add(admin_user)
+            session.commit()
+            logger.info("Default admin user created.")
+        if not session.exec(select(User)).first():
+            password = encrypt_password("freeyourmind")
+            regular_user = User(username="morpheus", password=password)
+            session.add(regular_user)
+            session.commit()
+            logger.info("Default regular user created.")
 
 @contextmanager
 def get_cli_session():
