@@ -1,0 +1,96 @@
+{% extends "authenticated-base.html" %}
+
+{% block external_js %}
+<script src="{{ url_for('static', path='js/budget.js')}}"></script>
+{% endblock %}
+
+<style>
+    #edit-budget-btn {
+        margin-top: 20px;
+        text-align: center;
+        background-color: #354f52;
+        border-color: #354f52;
+        color: #354f52;
+    }
+</style>
+
+{% block subpage_content %}
+    <div class="container" id="content">
+        <div class = "summary">
+            <h5 class="card-title">Budget Summary for {{month}}</h5>
+            <p class="card-text">This is a summary of your budget for the month of {{month}}. You can see an overview of your expenses and income here.</p>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <span class="text-success">
+                            Income:  
+                        </span>
+                        <span class="text-success">
+                            $5000  
+                        </span>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <span class="text-danger">
+                            Expense:  
+                        </span>
+                        <span class="text-danger">
+                            $3000  
+                        </span>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <span class="text-primary">
+                            Savings:  
+                        </span>
+                        <span class="text-primary">
+                            $2000  
+                        </span> 
+                    </div>
+                </div>
+              <div class = "d-flex">
+                <button class="btn btn-primary ms-auto" id="edit-budget-btn" style="background-color: #354f52; border-color: #354f52;">Edit Budget</button>
+              </div>
+        </div>
+        <div class = "Analytics">
+            <h5 class="card-title">Budget Analytics</h5>
+            <p class="card-text">Here are some insights about your budget performance.</p>
+                <div class="card p-4 shadow-sm">
+                    <h5>Monthly Spending</h5>
+                    <canvas id="budgetChart"></canvas>
+                </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% endblock %}
+
+{% block subpage_scripts %}
+
+<script>
+const ctx = document.getElementById('budgetChart');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Food', 'Rent', 'Transport', 'Entertainment', 'Savings'],
+        datasets: [{
+            label: 'Expenses ($)',
+            data: [500, 1200, 300, 200, 800],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}
