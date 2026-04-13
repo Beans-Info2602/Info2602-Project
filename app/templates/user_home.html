@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block subpage_content %}
-    <h2>Report Overview</h2>
+    <h2 style="color: #6B9080;">Report Overview</h2>
     <p>Welcome back, <strong>{{user.username}}!</strong> Here's a quick overview of your financials for {{month}}.</p>
 
 {% if not incomes and not recurring and not one_time %}
@@ -43,14 +43,14 @@
                         {% endfor %}
                     </ul>
                     <hr>
-                    <strong>Total:</strong> <strong>{{ "{:.2f}".format(total_income) }}</strong> 
+                    <strong>Total: $</strong><strong>{{ "{:.2f}".format(total_income) }}</strong> 
                     {% else %}
                     <p class="text-muted text-center">No income recorded</p>
                     {% endif %}
                 </div>
             </div>
         </div>
-
+      
         <div class="col-12 col-md-6 mb-5 mt-5">
             <div class="card" style="background-color: #fff;">
                 <div class="card-body">
@@ -66,14 +66,14 @@
                                 <strong>${{ "{:.2f}".format(total_one_time) }}</strong></li>
                     </ul>
                     <hr>
-                    <strong>Total:</strong> <strong>{{ "{:.2f}".format(total_expenses) }}</strong> 
+                    <strong>Total: $</strong><strong>{{ "{:.2f}".format(total_expenses) }}</strong> 
                     {% else %}
                     <p class="text-muted text-center">No expenses recorded</p>
                     {% endif %}
                 </div>
             </div>
         </div>
-            
+
         <div class="col-12 col-md-6 mb-5">
             <div class="card" style="background-color: #fff;">
                 <div class="card-body">
@@ -88,14 +88,14 @@
                         {% endfor %}
                     </ul>
                     <hr>
-                    <strong>Total:</strong> <strong>{{ "{:.2f}".format(total_recurring) }}</strong> 
+                    <strong>Total: $</strong><strong>{{ "{:.2f}".format(total_recurring) }}</strong> 
                     {% else %}
                     <p class="text-muted text-center">No recurring payments recorded</p>
                     {% endif %}
                 </div>
             </div>
         </div>
-
+        
         <div class="col-12 col-md-6 mb-5">
             <div class="card" style="background-color: #fff;">
                 <div class="card-body">
@@ -110,13 +110,30 @@
                         {% endfor %}
                     </ul>
                     <hr>
-                    <strong>Total:</strong> <strong>{{ "{:.2f}".format(total_one_time) }}</strong> 
+                    <strong>Total: ${{ "{:.2f}".format(total_one_time) }}</strong> 
                     {% else %}
                     <p class="text-muted text-center">No one-time payments recorded</p>
                     {% endif %}
                 </div>
             </div>
         </div>
+        <div class="col-12 col-md-6 mb-5">
+            <div class="card" style="background-color: #fff;">
+                <div class="card-body">
+                    <h3 class="card-title d-flex justify-content-center">Remaining</h3><br>
+                    <ul>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total Income</span><strong>${{ "{:.2f}".format(total_income) }}</strong></li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total Expenses</span><strong>${{ "{:.2f}".format(total_expenses) }}</strong></li>
+                        <hr>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>Remaining budget: ${{ "{:.2f}".format(remaining_budget) }}</strong>
+                    </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-{% endif %}
+    {% endif %}
 {% endblock %}

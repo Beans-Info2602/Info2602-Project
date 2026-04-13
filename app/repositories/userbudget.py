@@ -37,8 +37,11 @@ class UserBudgetRepository:
     def get_user_budget_by_id(self, budget_id: int) -> Optional[UserBudget]:
         return self.db.get(UserBudget, budget_id)
 
-    def get_all_user_budgets(self) -> list[UserBudget]:
-        return self.db.exec(select(UserBudget)).all()
+    def get_all_budgets_for_user(self, user_id: int) -> list[UserBudget]:
+        return self.db.exec(select(UserBudget).where(UserBudget.user_id == user_id)).all()
+    
+    def get_budget_for_user(self, user_id: int) -> Optional[UserBudget]:
+        return self.db.exec(select(UserBudget).where(UserBudget.user_id == user_id)).one_or_none()
     
     def get_all_categories(self) -> list[CategoryName]:
         return list(CategoryName)

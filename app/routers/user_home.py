@@ -6,7 +6,8 @@ from app.dependencies.auth import AuthDep, IsUserLoggedIn, get_current_user, is_
 from . import router, templates
 from datetime import datetime
 from app.models.userbudget import UserBudget
-from sqlmodel import select
+from app.services.user_budget_service import UserBudgetService
+from app.repositories.userbudget import UserBudgetRepository
 
 @router.get("/app", response_class=HTMLResponse)
 async def user_home_view(
@@ -14,7 +15,9 @@ async def user_home_view(
     user: AuthDep,
     db:SessionDep
 ):
-    budget = db.exec(select(UserBudget).where(UserBudget.user_id == user.id)).one_or_none()
+    repo = UserBudgetRepository(db)
+    service = UserBudgetService(repo)
+    budget = service.get_budget_for_user(user.id)
     
     incomes = budget.income_list if budget else []
     expenses = budget.expense_list if budget else []
