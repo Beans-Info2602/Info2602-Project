@@ -24,6 +24,12 @@ class UserBudgetService:
     def get_user_budget_by_id(self, budget_id: int) -> Optional[UserBudgetResponse]:
         return self.user_budget_repo.get_user_budget_by_id(budget_id)
 
+    def get_budgets_for_user(self, user_id: int) -> list[UserBudgetResponse]:
+        return self.user_budget_repo.get_all_budgets_for_user(user_id)
+    
+    def get_budget_for_user(self, user_id: int) -> Optional[UserBudgetResponse]:
+        return self.user_budget_repo.get_budget_for_user(user_id)
+
     def get_all_user_budgets(self) -> list[UserBudgetResponse]:
         return self.user_budget_repo.get_all_user_budgets()
     

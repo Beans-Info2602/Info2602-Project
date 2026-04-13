@@ -1,0 +1,139 @@
+{% extends "authenticated-base.html" %}
+
+{% block external_js %}
+<script src="{{ url_for('static', path='js/app.js')}}"></script>
+{% endblock %}
+
+{% block title %}Home{% endblock %}
+
+{% block additional_styles %}
+
+<style>
+.No-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    font-size: xx-large;
+}
+</style>
+{% endblock %}
+
+{% block subpage_content %}
+    <h2 style="color: #6B9080;">Report Overview</h2>
+    <p>Welcome back, <strong>{{user.username}}!</strong> Here's a quick overview of your financials for {{month}}.</p>
+
+{% if not incomes and not recurring and not one_time %}
+    <div class="No-data">
+        <p>No budget to display.<a href="\budget" class="empty text-decoration-none" style="color: #6B9080;"><em> Create one now!</em></a></p>
+    </div>
+{% else %}
+    <div class = "row rounded px-3">
+        <div class="col-12 col-md-6 mb-5 mt-5" >
+            <div class="card" style="background-color: #fff;">
+                <div class="card-body">
+                    <h3 class="card-title d-flex justify-content-center">Income</h3><br>
+                    {% if incomes %}
+                        <ul class="income-list">
+                        {% for income in incomes %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>{{ income.name }}</span>
+                                <strong>${{ "{:.2f}".format(income.earnings) }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <hr>
+                    <strong>Total: $</strong><strong>{{ "{:.2f}".format(total_income) }}</strong> 
+                    {% else %}
+                    <p class="text-muted text-center">No income recorded</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+      
+        <div class="col-12 col-md-6 mb-5 mt-5">
+            <div class="card" style="background-color: #fff;">
+                <div class="card-body">
+                    <h3 class="card-title d-flex justify-content-center">Expenses</h3><br>
+                    {% if recurring or one_time %}
+                        <ul class="income-list">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Recurring</span>
+                                <strong>${{ "{:.2f}".format(total_recurring) }}</strong></li>
+
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>One-Time</span>
+                                <strong>${{ "{:.2f}".format(total_one_time) }}</strong></li>
+                    </ul>
+                    <hr>
+                    <strong>Total: $</strong><strong>{{ "{:.2f}".format(total_expenses) }}</strong> 
+                    {% else %}
+                    <p class="text-muted text-center">No expenses recorded</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 mb-5">
+            <div class="card" style="background-color: #fff;">
+                <div class="card-body">
+                    <h3 class="card-title d-flex justify-content-center">Recurring Payments</h3><br>
+                    {% if recurring %}
+                        <ul class="income-list">
+                        {% for expense in recurring %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>{{ expense.name }}</span>
+                                <strong>${{ "{:.2f}".format(expense.cost) }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <hr>
+                    <strong>Total: $</strong><strong>{{ "{:.2f}".format(total_recurring) }}</strong> 
+                    {% else %}
+                    <p class="text-muted text-center">No recurring payments recorded</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-md-6 mb-5">
+            <div class="card" style="background-color: #fff;">
+                <div class="card-body">
+                    <h3 class="card-title d-flex justify-content-center">One-Time Payments</h3><br>
+                    {% if one_time %}
+                        <ul class="income-list">
+                        {% for expense in one_time %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>{{ expense.name }}</span>
+                                <strong>${{ "{:.2f}".format(expense.cost) }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <hr>
+                    <strong>Total: ${{ "{:.2f}".format(total_one_time) }}</strong> 
+                    {% else %}
+                    <p class="text-muted text-center">No one-time payments recorded</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 mb-5">
+            <div class="card" style="background-color: #fff;">
+                <div class="card-body">
+                    <h3 class="card-title d-flex justify-content-center">Remaining</h3><br>
+                    <ul>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total Income</span><strong>${{ "{:.2f}".format(total_income) }}</strong></li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total Expenses</span><strong>${{ "{:.2f}".format(total_expenses) }}</strong></li>
+                        <hr>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>Remaining budget: ${{ "{:.2f}".format(remaining_budget) }}</strong>
+                    </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
