@@ -1,5 +1,6 @@
 from sqlmodel import Session, select, func
 from app.models.user import Admin, UserBase, User
+from app.models.userbudget import UserBudget, Income, Expense
 from typing import Optional, Tuple
 from app.utilities.pagination import Pagination
 from app.schemas.user import UserUpdate
@@ -85,6 +86,25 @@ class UserRepository:
         if user.role == "Administrator":
             raise Exception("Admin users cannot be deleted")
         try:
+            user_budgets = self.db.exec(
+                select(UserBudget).where(UserBudget.user_id == user_id)
+            ).all()
+
+            for budget in user_budgets:
+                expenses = self.db.exec(
+                    select(Expense).where(Expense.user_budget_id == budget.id)
+                ).all()
+                for expense in expenses:
+                    self.db.delete(expense)
+
+                incomes = self.db.exec(
+                    select(Income).where(Income.user_budget_id == budget.id)
+                ).all()
+                for income in incomes:
+                    self.db.delete(income)
+
+                self.db.delete(budget)
+
             self.db.delete(user)
             self.db.commit()
         except Exception as e:
