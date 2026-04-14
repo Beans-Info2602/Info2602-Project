@@ -71,39 +71,13 @@ async def user_home_view(
 @router.get("/budget", response_class=HTMLResponse)
 def budget_page(request: Request, user: AuthDep, db:SessionDep):
     current_month = datetime.now().strftime("%B")
-    repo = UserBudgetRepository(db)
-    service = UserBudgetService(repo)
-    budget = service.get_budget_for_user(user.id)
-
-    existing_budget_data = None
-    if budget:
-        existing_budget_data = {
-            "name": budget.name,
-            "incomes": [
-                {
-                    "name": income.name,
-                    "amount": float(income.earnings),
-                }
-                for income in budget.income_list
-            ],
-            "expenses": [
-                {
-                    "name": expense.name,
-                    "amount": float(expense.cost),
-                    "recurring": bool(expense.is_recurring),
-                    "category": expense.category.value,
-                }
-                for expense in budget.expense_list
-            ],
-        }
 
     return templates.TemplateResponse(
         request=request,
         name="budget.html",
         context={
             "user": user,
-            "month": current_month,
-            "existing_budget_data": existing_budget_data,
+            "month": current_month
         }
     )
 

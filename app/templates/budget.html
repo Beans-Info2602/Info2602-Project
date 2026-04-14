@@ -294,21 +294,8 @@
     console.log("Budget page JS loaded");
 
     document.addEventListener("DOMContentLoaded", () => {
-        const existingBudget = {{ existing_budget_payload | tojson }};
-        let incomes = Array.isArray(existingBudget?.incomes)
-            ? existingBudget.incomes.map((income) => ({
-                  name: income.name,
-                  amount: Number(income.amount) || 0,
-              }))
-            : [];
-        let expenses = Array.isArray(existingBudget?.expenses)
-            ? existingBudget.expenses.map((expense) => ({
-                  name: expense.name,
-                  amount: Number(expense.amount) || 0,
-                  recurring: Boolean(expense.recurring),
-                  category: expense.category || "Other",
-              }))
-            : [];
+        let incomes = [];
+        let expenses = [];
 
         const budgetNameInput = document.getElementById("budget-name");
         const incomeNameInput = document.getElementById("income-name");
@@ -317,10 +304,6 @@
         const expenseAmountInput = document.getElementById("expense-amount");
         const expenseCategoryInput =
             document.getElementById("expense-category");
-
-        if (existingBudget?.name) {
-            budgetNameInput.value = existingBudget.name;
-        }
 
         const step1Error = document.getElementById("step1-error");
         const step2Error = document.getElementById("step2-error");
@@ -700,9 +683,6 @@
 
             budgetChart.update();
         }
-
-        updateBudgetSummary();
-        updateChart();
     });
 </script>
 
