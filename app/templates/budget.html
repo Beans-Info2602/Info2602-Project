@@ -515,6 +515,7 @@
         document
             .getElementById("save-budget")
             .addEventListener("click", async function () {
+                const saveButton = document.getElementById("save-budget");
                 const budgetName = budgetNameInput.value.trim();
 
                 if (!budgetName) {
@@ -562,6 +563,7 @@
                 };
 
                 try {
+                    saveButton.disabled = true;
                     const response = await fetch("/budgets/create", {
                         method: "POST",
                         headers: {
@@ -570,16 +572,40 @@
                         body: JSON.stringify(budget),
                     });
 
-                    const data = await response.json();
+                    const contentType = response.headers.get("content-type") || "";
+                    const data = contentType.includes("application/json")
+                        ? await response.json()
+                        : null;
+
+                    if (!response.ok) {
+                        const errorMessage =
+                            data?.detail ||
+                            "Unable to save budget right now. A budget with that name may already exist. Please try again.";
+                        showStepError(step3Error, errorMessage);
+                        return;
+                    }
+
+                    clearStepError(step3Error);
 
                     console.log("Saved:", data);
+
+                    const toastElement = document.getElementById("budgetToast");
+                    toastElement.classList.remove("text-bg-danger");
+                    toastElement.classList.add("text-bg-success");
+                    toastElement.querySelector(".toast-body").textContent =
+                        "Budget saved successfully.";
+
+                    const toast = new bootstrap.Toast(toastElement);
+                    toast.show();
                 } catch (error) {
                     console.error("Error saving budget:", error);
+                    showStepError(
+                        step3Error,
+                        "Unable to save budget right now. A budget with that name may already exist. Please try again.",
+                    );
+                } finally {
+                    saveButton.disabled = false;
                 }
-                const toast = new bootstrap.Toast(
-                    document.getElementById("budgetToast"),
-                );
-                toast.show();
             });
 
         const openModal = document.querySelector(".openModal");

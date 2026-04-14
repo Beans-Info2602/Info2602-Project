@@ -10,6 +10,7 @@ from datetime import datetime
 from app.models.userbudget import UserBudget
 from app.services.user_budget_service import UserBudgetService
 from app.repositories.userbudget import UserBudgetRepository
+from sqlalchemy.exc import IntegrityError
 
 @router.get("/app", response_class=HTMLResponse)
 async def user_home_view(
@@ -115,7 +116,21 @@ async def save_budget(budget: UserBudgetCreate, db:SessionDep, current_user: Use
 
     repo = UserBudgetRepository(db)
     service = UserBudgetService(repo)
-    new_budget = service.create_user_budget(budget_data)
+
+    existing_budget = service.get_budget_for_user(current_user.id)
+    if existing_budget:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A budget already exists for this account. Please edit the existing budget instead.",
+        )
+
+    try:
+        new_budget = service.create_user_budget(budget_data)
+    except IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A budget with this name already exists. Please choose a different name.",
+        )
 
     for income in budget_data["incomes"]:
         service.add_income(
