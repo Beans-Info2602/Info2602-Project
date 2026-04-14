@@ -39,8 +39,8 @@ class UserBudgetService:
     def update_user_budget(self, budget_id:int, user_budget_data: UserBudgetUpdate)->UserBudgetResponse:
         return self.user_budget_repo.update_user_budget(budget_id, user_budget_data)
     
-    def add_income(self, income: IncomeCreate) -> IncomeResponse:
-        return self.user_budget_repo.add_income(income)
+    def add_income(self, user_budget_id: int, income: IncomeCreate) -> IncomeResponse:
+        return self.user_budget_repo.add_income(user_budget_id, income)
     
     def get_all_incomes_for_budget(self, user_budget_id:int) -> list[IncomeResponse]:
         return self.user_budget_repo.get_all_incomes_for_budget(user_budget_id)
@@ -51,8 +51,8 @@ class UserBudgetService:
     def delete_income(self, income_id:int):
         self.user_budget_repo.delete_income(income_id)
         
-    def add_expense(self, expense: ExpenseCreate) -> ExpenseResponse:
-        return self.user_budget_repo.add_expense(expense)
+    def add_expense(self, user_budget_id: int, expense: ExpenseCreate) -> ExpenseResponse:
+        return self.user_budget_repo.add_expense(user_budget_id, expense)
     
     def get_all_expenses_for_budget(self, user_budget_id:int) -> list[ExpenseResponse]:
         return self.user_budget_repo.get_all_expenses_for_budget(user_budget_id)

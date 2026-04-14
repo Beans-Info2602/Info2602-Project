@@ -123,10 +123,15 @@
                             <p>Select Category:
                                 <select id="expense-category" class="form-select">
                                     <option value="">Select a category</option>
-                                    <option value="food">Food</option>
-                                    <option value="rent">Rent</option>
-                                    <option value="transport">Transport</option>
-                                    <option value="entertainment">Entertainment</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Health">Health</option>
+                                    <option value="Sports">Sports</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Rent">Rent</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Other">Other</option>
                                 </select>
                             </p>
                             <div class="check-box d-flex justify-content-start align-items-center gap-2">
@@ -323,10 +328,10 @@
         const budgetChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Food', 'Rent', 'Transport', 'Entertainment'],
+                labels: ['Technology', 'Health', 'Sports', 'Entertainment', 'Business', 'Rent', 'Food', 'Utilities', 'Other'],
                 datasets: [{
                     label: 'Expenses ($)',
-                    data: [0, 0, 0, 0],
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
                     borderWidth: 1
                 }]
             },
@@ -341,12 +346,12 @@
         });
         function updateChart() {
 
-            const categoryTotals = [0, 0, 0, 0];
+            const categoryTotals = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
             expenses.forEach(expense => {
 
                 const categoryIndex =
-                    ['food', 'rent', 'transport', 'entertainment']
+                    ['Technology', 'Health', 'Sports', 'Entertainment', 'Business', 'Rent', 'Food', 'Utilities', 'Other']
                     .indexOf(expense.category);
 
                 if (categoryIndex !== -1) {
