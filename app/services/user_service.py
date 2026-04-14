@@ -21,4 +21,7 @@ class UserService:
     
     def search_users(self, query: str, page:int=1, limit:int=10):
         return self.user_repo.search_users(query, page, limit)
+
+    def delete_user(self, user_id: int):
+        return self.user_repo.delete_user(user_id)
     

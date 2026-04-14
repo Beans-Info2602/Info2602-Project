@@ -1,10 +1,11 @@
 from sqlmodel import Field, SQLModel
-from typing import Optional
+from typing import List, Optional
 from app.models.userbudget import CategoryName
 
 class UserBudgetCreate(SQLModel):
-    user_id: int
     name: str
+    incomes: List[dict]
+    expenses: List[dict]
 
 class UserBudgetUpdate(SQLModel):
     name: Optional[str]
@@ -13,6 +14,7 @@ class UserBudgetUpdate(SQLModel):
 class IncomeCreate(SQLModel):
     name: str
     earnings: float
+    user_budget_id: int
     
 class IncomeUpdate(SQLModel):
     name: Optional[str]
@@ -30,6 +32,7 @@ class ExpenseCreate(SQLModel):
     category: CategoryName = Field(default=CategoryName.OTHER, nullable=False)
     is_recurring: bool = Field(default=False)
     is_paid: bool = Field(default=False)
+    user_budget_id: int
     
 class ExpenseUpdate(SQLModel):
     name: Optional[str]
