@@ -200,16 +200,22 @@
         function updateBudgetSummary() {
 
             const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
-
             const totalExpense = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-
             const totalSavings = totalIncome - totalExpense;
 
-            document.getElementById("total-income").textContent = `$${totalIncome}`;
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            });
 
-            document.getElementById("total-expense").textContent = `$${totalExpense}`;
+            document.getElementById("total-income").textContent =
+                formatter.format(totalIncome);
 
-            document.getElementById("total-savings").textContent = `$${totalSavings}`;
+            document.getElementById("total-expense").textContent =
+                formatter.format(totalExpense);
+
+            document.getElementById("total-savings").textContent =
+                formatter.format(totalSavings);
         }
 
         document.getElementById("add-income").addEventListener("click", function () {

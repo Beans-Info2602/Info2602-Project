@@ -140,8 +140,8 @@
 
                                 <td>{{ table_user.username }}</td>
                                 <td>{{ table_user.creation_date }}</td>
-                                <td>${{ table_user.total_income }}</td>
-                                <td>${{ table_user.total_expenses }}</td>
+                                <td>${{ "%.2f"|format(table_user.total_income) }}</td>
+                                <td>${{ "%.2f"|format(table_user.total_expenses) }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
