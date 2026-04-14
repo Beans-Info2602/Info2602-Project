@@ -1,6 +1,8 @@
-{% extends "authenticated-base.html" %} {% block external_js %}
+{% extends "authenticated-base.html" %}
 
 {% block title %}Budget{% endblock %}
+
+{% block external_css %}
 
 <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -56,7 +58,9 @@
     }
 </style>
 
-{% endblock %} {% block subpage_content %}
+{% endblock %}
+
+{% block subpage_content %}
 <div class="container" id="content">
     <div class="summary">
         <h5 class="card-title">Budget Summary for {{month}}</h5>
@@ -294,8 +298,21 @@
     console.log("Budget page JS loaded");
 
     document.addEventListener("DOMContentLoaded", () => {
-        let incomes = [];
-        let expenses = [];
+        const existingBudget = {{ (existing_budget_data or none) | tojson }};
+        let incomes = Array.isArray(existingBudget?.incomes)
+            ? existingBudget.incomes.map((income) => ({
+                  name: income.name,
+                  amount: Number(income.amount) || 0,
+              }))
+            : [];
+        let expenses = Array.isArray(existingBudget?.expenses)
+            ? existingBudget.expenses.map((expense) => ({
+                  name: expense.name,
+                  amount: Number(expense.amount) || 0,
+                  recurring: Boolean(expense.recurring),
+                  category: expense.category || "Other",
+              }))
+            : [];
 
         const budgetNameInput = document.getElementById("budget-name");
         const incomeNameInput = document.getElementById("income-name");
@@ -304,6 +321,10 @@
         const expenseAmountInput = document.getElementById("expense-amount");
         const expenseCategoryInput =
             document.getElementById("expense-category");
+
+        if (existingBudget?.name) {
+            budgetNameInput.value = existingBudget.name;
+        }
 
         const step1Error = document.getElementById("step1-error");
         const step2Error = document.getElementById("step2-error");
@@ -683,6 +704,9 @@
 
             budgetChart.update();
         }
+
+        updateBudgetSummary();
+        updateChart();
     });
 </script>
 
