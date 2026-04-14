@@ -92,7 +92,7 @@
                     <div class="modal-body">
                         <div class="first-content">
                             <p>
-                                Budget name: <input type="text" id="budget-name" class="form-control" placeholder="Enter budget name">
+                                Budget Name: <input type="text" id="budget-name" class="form-control" placeholder="eg. Bob's Budget">
                             </p>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-info first-modal-next">
@@ -102,8 +102,8 @@
                         </div>
 
                         <div class="second-content d-none">
-                            <p>Name: <input type="text" id="income-name" class="form-control" placeholder="Enter income name"></p>
-                            <p>Amount: <input type="number" id="income-amount" class="form-control" placeholder="Enter income amount"></p>
+                            <p>Income Name: <input type="text" id="income-name" class="form-control" placeholder="eg. Salary"></p>
+                            <p>Income Amount: <input type="number" id="income-amount" class="form-control" placeholder="eg. 2000.00"></p>
                             
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-info me-auto second-modal-back" id="back">
@@ -118,9 +118,9 @@
                             </div>
                         </div>
                         <div class="third-content d-none">
-                            <p>Name: <input type="text" id="expense-name" class="form-control" placeholder="Enter expense name"></p>
-                            <p>Amount: <input type="number" id="expense-amount" class="form-control" placeholder="Enter expense amount"></p>
-                            <p>Select Category: 
+                            <p>Expense Name: <input type="text" id="expense-name" class="form-control" placeholder="eg. Netflix"></p>
+                            <p>Expense Amount: <input type="number" id="expense-amount" class="form-control" placeholder="eg. 100.00"></p>
+                            <p>Select Category:
                                 <select id="expense-category" class="form-select">
                                     <option value="">Select a category</option>
                                     <option value="food">Food</option>
@@ -150,6 +150,23 @@
                 </div>
             </div>
         </div>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+            <div id="budgetToast" class="toast align-items-center text-bg-success border-0" role="alert">
+
+                <div class="d-flex">
+                    <div class="toast-body">
+                        Budget Saved!
+                    </div>
+
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast">
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -160,27 +177,7 @@
 
 <script>
     console.log("Budget page JS loaded");
-    const ctx = document.getElementById('budgetChart');
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Food', 'Rent', 'Transport', 'Entertainment', 'Savings'],
-            datasets: [{
-                label: 'Expenses ($)',
-                data: [500, 1200, 300, 200, 800],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    
 
     document.addEventListener("DOMContentLoaded", () => {
         
@@ -250,6 +247,7 @@
             expenses.push(expenseObj);
             updateBudgetSummary();
             renderExpenseList();
+            updateChart();
 
             document.getElementById("expense-name").value = "";
             document.getElementById("expense-amount").value = "";
@@ -303,6 +301,47 @@
             //document.querySelector(".first-content").classList.add("d-none");
             document.querySelector(".third-content").classList.add("d-none");
         });
+        const ctx = document.getElementById('budgetChart');
+
+        const budgetChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Food', 'Rent', 'Transport', 'Entertainment'],
+                datasets: [{
+                    label: 'Expenses ($)',
+                    data: [0, 0, 0, 0],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        function updateChart() {
+
+            const categoryTotals = [0, 0, 0, 0];
+
+            expenses.forEach(expense => {
+
+                const categoryIndex =
+                    ['food', 'rent', 'transport', 'entertainment']
+                    .indexOf(expense.category);
+
+                if (categoryIndex !== -1) {
+                    categoryTotals[categoryIndex] += expense.amount;
+                }
+
+            });
+
+            budgetChart.data.datasets[0].data = categoryTotals;
+
+            budgetChart.update();
+        }
     });
 </script>
 
