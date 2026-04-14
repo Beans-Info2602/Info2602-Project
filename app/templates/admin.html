@@ -110,11 +110,9 @@
         <!-- MAIN BODY -->
         <div class="dashboard-body">
 
-            <form method="POST" action="/admin/delete-users">
-
-                <button type="submit" class="delete-btn mb-4">
-                    Delete User
-                </button>
+            <form id="deleteForm">
+                <button type="submit">Delete</button>
+            </form>
 
                 <div class="table-wrapper">
                     <table class="table user-table">
@@ -161,3 +159,24 @@
 
 </body>
 </html>
+<script>
+    document.getElementById("deleteForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const selectedUsers = Array.from(
+            document.querySelectorAll('input[name="selected_users"]:checked')
+        ).map(cb => Number(cb.value));
+
+        await fetch("/admin/delete-users", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                selected_users: selectedUsers
+            })
+        });
+
+        window.location.href = "/admin";
+    });
+</script>

@@ -51,19 +51,15 @@ async def admin_home_view(request: Request, user: AdminDep, db: SessionDep):
         }
     )
 
-@router.post("/admin/delete-users")
+@router.delete("/admin/delete-users")
 async def delete_users(
-    selected_users: list[int] = Form(...),
-    db: SessionDep = None
+    request: user.DeleteUsersRequest,
+    db: SessionDep
 ):
-
     repo = UserRepository(db)
     service = UserService(repo)
 
-    for user_id in selected_users:
+    for user_id in request.selected_users:
         service.delete_user(user_id)
 
-    return RedirectResponse(
-        url="/admin",
-        status_code=303
-    )
+    return {"message": "Deleted"}

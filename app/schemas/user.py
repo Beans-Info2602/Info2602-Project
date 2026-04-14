@@ -19,3 +19,8 @@ class UserResponse(SQLModel):
 class SignupRequest(SQLModel):
     username: str
     password: str
+
+from pydantic import BaseModel
+
+class DeleteUsersRequest(BaseModel):
+    selected_users: list[int]
