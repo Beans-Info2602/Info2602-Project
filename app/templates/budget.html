@@ -329,6 +329,98 @@
             console.log("Expense List Updated:", expenses);
         }
 
+        function tryAddIncomeFromInputs(showValidationErrors = true) {
+            const name = incomeNameInput.value.trim();
+            const amountValue = incomeAmountInput.value;
+            const amount = parseFloat(amountValue);
+
+            const hasTypedIncome = Boolean(name) || Boolean(amountValue);
+            const invalidName = !name;
+            const invalidAmount =
+                !amountValue || Number.isNaN(amount) || amount <= 0;
+
+            if (invalidName || invalidAmount) {
+                if (showValidationErrors && hasTypedIncome) {
+                    setInvalid(incomeNameInput, invalidName);
+                    setInvalid(incomeAmountInput, invalidAmount);
+                    showStepError(
+                        step2Error,
+                        "Enter a valid income name and amount, then click Add.",
+                    );
+                }
+                return false;
+            }
+
+            clearStepError(step2Error);
+            setInvalid(incomeNameInput, false);
+            setInvalid(incomeAmountInput, false);
+
+            incomes.push({
+                name: name,
+                amount: amount,
+            });
+
+            updateBudgetSummary();
+            renderIncomeList();
+
+            incomeNameInput.value = "";
+            incomeAmountInput.value = "";
+
+            return true;
+        }
+
+        function tryAddExpenseFromInputs(showValidationErrors = true) {
+            const name = expenseNameInput.value.trim();
+            const amountValue = expenseAmountInput.value;
+            const amount = parseFloat(amountValue);
+            const recurring =
+                document.getElementById("expense-recurring").checked;
+            const category = expenseCategoryInput.value;
+
+            const hasTypedExpense =
+                Boolean(name) || Boolean(amountValue) || Boolean(category);
+            const invalidName = !name;
+            const invalidAmount =
+                !amountValue || Number.isNaN(amount) || amount <= 0;
+            const invalidCategory = !category;
+
+            if (invalidName || invalidAmount || invalidCategory) {
+                if (showValidationErrors && hasTypedExpense) {
+                    setInvalid(expenseNameInput, invalidName);
+                    setInvalid(expenseAmountInput, invalidAmount);
+                    setInvalid(expenseCategoryInput, invalidCategory);
+                    showStepError(
+                        step3Error,
+                        "Enter valid expense details and category, then click Add.",
+                    );
+                }
+                return false;
+            }
+
+            clearStepError(step3Error);
+            setInvalid(expenseNameInput, false);
+            setInvalid(expenseAmountInput, false);
+            setInvalid(expenseCategoryInput, false);
+
+            expenses.push({
+                name: name,
+                amount: amount,
+                recurring: recurring,
+                category: category,
+            });
+
+            updateBudgetSummary();
+            renderExpenseList();
+            updateChart();
+
+            expenseNameInput.value = "";
+            expenseAmountInput.value = "";
+            document.getElementById("expense-recurring").checked = false;
+            expenseCategoryInput.value = "";
+
+            return true;
+        }
+
         function updateBudgetSummary() {
             const totalIncome = incomes.reduce(
                 (sum, income) => sum + income.amount,
@@ -388,85 +480,13 @@
         document
             .getElementById("add-income")
             .addEventListener("click", function () {
-                const name = incomeNameInput.value.trim();
-                const amountValue = incomeAmountInput.value;
-                const amount = parseFloat(amountValue);
-
-                const invalidName = !name;
-                const invalidAmount =
-                    !amountValue || Number.isNaN(amount) || amount <= 0;
-
-                setInvalid(incomeNameInput, invalidName);
-                setInvalid(incomeAmountInput, invalidAmount);
-
-                if (invalidName || invalidAmount) {
-                    showStepError(
-                        step2Error,
-                        "Enter a valid income name and amount, then click Add.",
-                    );
-                    return;
-                }
-
-                clearStepError(step2Error);
-
-                const incomeObj = {
-                    name: name,
-                    amount: amount,
-                };
-
-                incomes.push(incomeObj);
-                updateBudgetSummary();
-                renderIncomeList();
-
-                incomeNameInput.value = "";
-                incomeAmountInput.value = "";
+                tryAddIncomeFromInputs(true);
             });
 
         document
             .getElementById("add-expense")
             .addEventListener("click", function () {
-                const name = expenseNameInput.value.trim();
-                const amountValue = expenseAmountInput.value;
-                const amount = parseFloat(amountValue);
-                const recurring =
-                    document.getElementById("expense-recurring").checked;
-                const category = expenseCategoryInput.value;
-
-                const invalidName = !name;
-                const invalidAmount =
-                    !amountValue || Number.isNaN(amount) || amount <= 0;
-                const invalidCategory = !category;
-
-                setInvalid(expenseNameInput, invalidName);
-                setInvalid(expenseAmountInput, invalidAmount);
-                setInvalid(expenseCategoryInput, invalidCategory);
-
-                if (invalidName || invalidAmount || invalidCategory) {
-                    showStepError(
-                        step3Error,
-                        "Enter valid expense details and category, then click Add.",
-                    );
-                    return;
-                }
-
-                clearStepError(step3Error);
-
-                const expenseObj = {
-                    name: name,
-                    amount: amount,
-                    recurring: recurring,
-                    category: category,
-                };
-
-                expenses.push(expenseObj);
-                updateBudgetSummary();
-                renderExpenseList();
-                updateChart();
-
-                expenseNameInput.value = "";
-                expenseAmountInput.value = "";
-                document.getElementById("expense-recurring").checked = false;
-                expenseCategoryInput.value = "";
+                tryAddExpenseFromInputs(true);
             });
 
         document
@@ -498,6 +518,10 @@
                         .querySelector(".second-content")
                         .classList.remove("d-none");
                     return;
+                }
+
+                if (expenses.length === 0) {
+                    tryAddExpenseFromInputs(true);
                 }
 
                 if (expenses.length === 0) {
@@ -569,6 +593,10 @@
         });
 
         secondModalNext.addEventListener("click", () => {
+            if (incomes.length === 0) {
+                tryAddIncomeFromInputs(true);
+            }
+
             if (incomes.length === 0) {
                 showStepError(
                     step2Error,
