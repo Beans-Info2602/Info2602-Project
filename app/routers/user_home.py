@@ -3,11 +3,13 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import status
 from app.dependencies.session import SessionDep
 from app.dependencies.auth import AuthDep, IsUserLoggedIn, get_current_user, is_admin
+from app.models.user import User
 from . import router, templates
 from datetime import datetime
 from app.models.userbudget import UserBudget
 from app.services.user_budget_service import UserBudgetService
 from app.repositories.userbudget import UserBudgetRepository
+from app.schemas.budget_schema import BudgetCreate
 
 @router.get("/app", response_class=HTMLResponse)
 async def user_home_view(
@@ -78,3 +80,18 @@ def budget_page(request: Request, user: AuthDep, db:SessionDep):
             "month": current_month
         }
     )
+
+@router.post("/budgets/create")
+async def save_budget(budget: BudgetCreate, db:SessionDep, current_user: User = Depends(get_current_user)):
+
+    budget_data = budget.model_dump()
+    budget_data["user_id"] = current_user.id
+
+    repo = UserBudgetRepository(db)
+    service = UserBudgetService(repo)
+    new_budget = service.create_user_budget(budget_data)
+
+    return {
+        "message": "Budget saved successfully",
+        "budget": new_budget
+    }

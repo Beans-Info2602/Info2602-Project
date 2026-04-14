@@ -255,7 +255,7 @@
             document.getElementById("expense-category").value = "";
         });
 
-        document.getElementById("save-budget").addEventListener("click", function () {
+        document.getElementById("save-budget").addEventListener("click", async function () {
 
             const budgetName = document.getElementById("budget-name").value;
             const budget = {
@@ -264,7 +264,24 @@
                 expenses: expenses
             };
 
-            console.log(budget);
+            try {
+                const response = await fetch("/budgets/create", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(budget)
+                });
+
+                const data = await response.json();
+
+                console.log("Saved:", data);
+
+            } catch (error) {
+                console.error("Error saving budget:", error);
+            }
+            const toast = new bootstrap.Toast(document.getElementById("budgetToast"));
+            toast.show();
         });
 
         const openModal = document.querySelector(".openModal");
